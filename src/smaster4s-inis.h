@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 typedef enum {KEY, VALUE, SECTION, COMMENT} ini_parse_state;
 typedef char* ini_parse_line_data[4];
 
