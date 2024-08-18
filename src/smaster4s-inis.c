@@ -63,6 +63,7 @@ extern const char* ini_get_char(const char* path, const char* section, const cha
       _free_line_data(line_data);
       return NULL;
     }
+    free(line_data[parse_state]);
     line_data[parse_state] = new_data;
 
     last = current;
