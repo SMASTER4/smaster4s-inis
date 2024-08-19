@@ -41,7 +41,7 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
 
     switch(current) {
       case '=':
-        parse_state = KEY;
+        parse_state = VALUE;
         goto next_char;
       case '[':
         parse_state = SECTION;
