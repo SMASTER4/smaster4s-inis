@@ -9,7 +9,7 @@ typedef char* ini_parse_line_data[4];
 // The return value is owned by the caller and needs to be freed by the caller
 // The return value will be NULL on failure
 // The return value will be NULL if the key is empty
-extern const char* ini_get_char(const char* path, const char* section, const char* key);
+extern char* ini_get_char(const char* path, const char* section, const char* key);
 
 // Compares line_data with section and key
 static bool _key_compare(const ini_parse_line_data line_data, const char* section, const char* key);

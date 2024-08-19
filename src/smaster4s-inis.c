@@ -6,7 +6,7 @@
 
 #include "smaster4s-inis.h"
 
-extern const char* ini_get_char(const char* path, const char* section, const char* key) {
+extern char* ini_get_char(const char* path, const char* section, const char* key) {
   if(path == NULL || key == NULL)
     return NULL;
   FILE* file = fopen(path, "r");
