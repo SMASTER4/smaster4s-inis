@@ -82,7 +82,7 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
 }
 
 static bool _key_compare(const ini_parse_line_data line_data, const char* section, const char* key) {
-  if(key != NULL || line_data[KEY] != NULL)
+  if(key == NULL || line_data[KEY] == NULL)
     return false;
   if(strcmp(key, line_data[KEY]) == 0)
     return true;
@@ -108,7 +108,9 @@ static char* _add_str_and_char(const char* base, const char addition) {
 
 static void _free_line_data(ini_parse_line_data line_data) {
     for(size_t i = 0; i < 4; i++) {
-      if(line_data[i] == NULL)
+      if(line_data[i] != NULL) {
         free(line_data[i]);
+        line_data[i] = NULL;
+      }
     }
 }
