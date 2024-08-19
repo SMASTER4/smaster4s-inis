@@ -74,6 +74,7 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
     line_data[parse_state] = new_data;
 
     last = current;
+    goto next_char;
   }
   fclose(file);
   _free_line_data(line_data);
