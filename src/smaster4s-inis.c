@@ -60,6 +60,10 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
 
     char* new_data;
     add_char:
+    if(line_data[parse_state] == NULL) {
+      line_data[parse_state] = malloc(sizeof('\0'));
+      *line_data[parse_state] = '\0';
+    }
     new_data = _add_str_and_char(line_data[parse_state], current);
     if(new_data == NULL) {
       fclose(file);
