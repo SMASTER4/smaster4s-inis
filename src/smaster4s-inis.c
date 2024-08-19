@@ -23,7 +23,10 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
     if(current == '\n') {
       if(_key_compare(line_data, section, key) && parse_state != KEY) {
         fclose(file);
-        return line_data[VALUE];
+        char* value = malloc(strlen(line_data[VALUE]) + sizeof('\0'));
+        strcpy(value, line_data[VALUE]);
+        _free_line_data(line_data);
+        return value;
       }
 
       parse_state = KEY;
