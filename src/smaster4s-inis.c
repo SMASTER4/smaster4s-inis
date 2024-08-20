@@ -58,7 +58,7 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
         break;
     }
 
-    char* new_data;
+    char* new_data; // You can't declare a variable behind a lable in C11
     add_char:
     new_data = _add_str_and_char(line_data[parse_state], current);
     if(new_data == NULL) {
@@ -104,10 +104,10 @@ static char* _add_str_and_char(const char* base, const char addition) {
 }
 
 static void _free_line_data(ini_parse_line_data line_data) {
-    for(size_t i = 0; i < 4; i++) {
-      if(line_data[i] != NULL) {
-        free(line_data[i]);
-        line_data[i] = NULL;
-      }
+  for(size_t i = 0; i < 4; i++) {
+    if(line_data[i] != NULL) {
+      free(line_data[i]);
+      line_data[i] = NULL;
     }
+  }
 }
