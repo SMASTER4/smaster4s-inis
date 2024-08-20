@@ -11,6 +11,8 @@ typedef char* ini_parse_line_data[4];
 // The return value will be NULL if the key is empty
 extern char* ini_get_char(const char* path, const char* section, const char* key);
 
+static inline void _set_parse_state(ini_parse_state* parse_state, ini_parse_line_data line_data, const ini_parse_state new_parse_state);
+
 // Compares line_data with section and key
 static bool _key_compare(const ini_parse_line_data line_data, const char* section, const char* key);
 

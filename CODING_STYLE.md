@@ -47,7 +47,6 @@ void destroy_the_world() {
 + `static` Functions:
   + Use snake_case
   + Use an _ in front of the
-  + They shouldn't be inline
 + `extern` Functions:
   + Use snake_case too
   + Use the `extern` keyword explicitly

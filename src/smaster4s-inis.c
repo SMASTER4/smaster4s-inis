@@ -31,8 +31,7 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
         _free_line_data(line_data);
         return value;
       }
-
-      parse_state = KEY;
+      _set_parse_state(&parse_state, line_data, KEY);
       goto next_char;
     }
 
@@ -41,19 +40,19 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
 
     switch(current) {
       case '=':
-        parse_state = VALUE;
+        _set_parse_state(&parse_state, line_data, VALUE);
         goto next_char;
       case '[':
-        parse_state = SECTION;
+        _set_parse_state(&parse_state, line_data, SECTION);
         goto next_char;
       case ']':
         goto next_char;
       case '#':
-        comment:
-        parse_state = COMMENT;
+        _set_parse_state(&parse_state, line_data, COMMENT);
         goto next_char;
       case ';':
-        goto comment;
+        _set_parse_state(&parse_state, line_data, COMMENT);
+        goto next_char;
       default:
         break;
     }
@@ -66,7 +65,8 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
       _free_line_data(line_data);
       return NULL;
     }
-    free(line_data[parse_state]);
+    if(line_data[parse_state] != NULL)
+      free(line_data[parse_state]);
     line_data[parse_state] = new_data;
 
     last = current;
@@ -75,6 +75,12 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
   fclose(file);
   _free_line_data(line_data);
   return NULL;
+}
+
+static inline void _set_parse_state(ini_parse_state* parse_state, ini_parse_line_data line_data, const ini_parse_state new_parse_state) {
+  *parse_state = new_parse_state;
+  free(line_data[new_parse_state]);
+  line_data[new_parse_state] = NULL;
 }
 
 static bool _key_compare(const ini_parse_line_data line_data, const char* section, const char* key) {
