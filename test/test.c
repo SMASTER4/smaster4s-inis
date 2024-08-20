@@ -74,7 +74,7 @@ static bool _test_ini_get_char_prepare() {
 }
 
 static void _test_ini_get_char_clean_up() {
-  if(access("test.ini", W_OK))
+  if(access("test.ini", W_OK) == 0)
     remove("test.ini");
 }
 
