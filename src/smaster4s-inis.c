@@ -20,6 +20,9 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
 
   next_char:
   if((current = fgetc(file)) != EOF) {
+    if(last == '\\' && current == '\n')
+      goto next_char;
+
     if(current == '\n') {
       if(_key_compare(line_data, section, key) && parse_state != KEY) {
         fclose(file);
@@ -32,9 +35,6 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
       parse_state = KEY;
       goto next_char;
     }
-
-    if(last == '\\' && current == '\n')
-      goto next_char;
 
     if(parse_state == COMMENT)
       goto next_char;
