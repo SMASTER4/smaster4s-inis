@@ -60,10 +60,6 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
 
     char* new_data;
     add_char:
-    if(line_data[parse_state] == NULL) {
-      line_data[parse_state] = malloc(sizeof('\0'));
-      *line_data[parse_state] = '\0';
-    }
     new_data = _add_str_and_char(line_data[parse_state], current);
     if(new_data == NULL) {
       fclose(file);
@@ -93,15 +89,16 @@ static bool _key_compare(const ini_parse_line_data line_data, const char* sectio
 }
 
 static char* _add_str_and_char(const char* base, const char addition) {
-  if(base == NULL)
-    return NULL;
-  char* result = (char*) malloc(strlen(base) + sizeof(addition) + sizeof('\0'));
+  size_t base_length = base == NULL ? 0 : strlen(base);
+  char* result = (char*) malloc(base_length + sizeof(addition) + sizeof('\0'));
   if(result == NULL)
     return NULL;
-  strcpy(result, base);
 
-  *(result + strlen(base)) = addition;
-  *(result + strlen(base) + sizeof(addition)) = '\0';
+  if(base != NULL)
+    strcpy(result, base);
+
+  *(result + base_length) = addition;
+  *(result + base_length + sizeof(addition)) = '\0';
 
   return result;
 }
