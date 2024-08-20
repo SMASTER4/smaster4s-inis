@@ -14,6 +14,7 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
     return NULL;
 
   ini_parse_state parse_state = KEY;
+  bool inQuotes = false;
   char current;
   char last = '\0';
   ini_parse_line_data line_data = {NULL, NULL, NULL, NULL};
@@ -37,6 +38,13 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
 
     if(parse_state == COMMENT)
       goto next_char;
+
+    if(current == '"') {
+      inQuotes = !inQuotes;
+      goto next_char;
+    }
+    if(inQuotes)
+      goto add_char;
 
     switch(current) {
       case '=':
