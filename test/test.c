@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #ifdef __unix__
 #include <unistd.h>
 #endif
@@ -34,20 +35,42 @@ static void _assert_string(const char* name, const char* a, const char* b) {
   }
 }
 
-static void _test_ini_get_char() {
+static void _test_ini_get_char(int count) {
+    if(count <= 0)
+      return;
+    if(_test_ini_get_char_prepare())
+      printf("Preparing for the testing ini_get_char failed");
+
+    double start = (double) clock() / CLOCKS_PER_SEC;
+
+    int i = 0;
+    char* result;
+    loop:
+      result = ini_get_char("test.ini", "section", "key");
+      _assert_string("ini_get_char", result, "value");
+      if(result != NULL)
+        free(result);
+      i++;
+      if(i < count)
+        goto loop;
+
+    double end = (double) clock() / CLOCKS_PER_SEC;
+
+    _test_ini_get_char_clean_up();
+    printf("Finished running the assertion loop of ini_get_char %d times in %f on average in %f seconds!\n", count, (end - start) / count, end - start);
+}
+
+static bool _test_ini_get_char_prepare() {
   if(access("test.ini", F_OK) == 0 && access("test.ini", R_OK) != 0)
-    return;
+    return true;
   if(access("test.ini", F_OK) != 0) {
     FILE* file = fopen("test.ini", "w");
     if(file == NULL)
-      return;
+      return true;
     fprintf(file, "[section]\nkey=value# Comment\n");
     fclose(file);
   }
-  char* result = ini_get_char("test.ini", "section", "key");
-  _assert_string("ini_get_char", result, "value");
-  if(result != NULL)
-    free(result);
+  return false;
 }
 
 static void _test_ini_get_char_clean_up() {
@@ -56,13 +79,11 @@ static void _test_ini_get_char_clean_up() {
 }
 
 static void _run_tests(int count) {
-  double start = (double) clock() / CLOCKS_PER_SEC;
-  for(int i = 0; i < count; i++) {
-    _test_ini_get_char();
-    _test_ini_get_char_clean_up();
+  if(count <= 0) {
+    printf("The execution count has to be higher than 0 not %d", count);
+    return;
   }
-  double end = (double) clock() / CLOCKS_PER_SEC;
-  printf("Finished running assertion loop %d times in %f on average in %f seconds!\n", count, (end - start) / count, end - start);
+  _test_ini_get_char(count);
 }
 
 int main(int argc, char** argv) {
