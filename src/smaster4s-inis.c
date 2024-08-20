@@ -21,8 +21,12 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
 
   next_char:
   if((current = fgetc(file)) != EOF) {
-    if(last == '\\' && current == '\n')
+    if(last == '\\')
+      goto add_char;
+    if(current == '\\') {
+      last = current;
       goto next_char;
+    }
 
     if(current == '\n') {
       if(_key_compare(line_data, section, key) && parse_state != KEY) {
