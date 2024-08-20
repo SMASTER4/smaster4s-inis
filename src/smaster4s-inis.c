@@ -80,8 +80,8 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
 static bool _key_compare(const ini_parse_line_data line_data, const char* section, const char* key) {
   if(key == NULL || line_data[KEY] == NULL)
     return false;
-  if(strcmp(key, line_data[KEY]) == 0)
-    return true;
+  if(strcmp(key, line_data[KEY]) != 0)
+    return false;
   if(section == NULL)
     return line_data[SECTION] == NULL;
 
