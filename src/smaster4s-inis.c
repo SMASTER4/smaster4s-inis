@@ -3,25 +3,27 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "smaster4s-inis.h"
 
-extern char* ini_get_char(const char* path, const char* section, const char* key) {
-  if(path == NULL || key == NULL)
-    return NULL;
+extern void ini_get_char(char buffer[256], const char* path, const char* section, const char* key) {
+  if(buffer == NULL || path == NULL || key == NULL)
+    return;
+  buffer[0] = '\0';
   FILE* file = fopen(path, "r");
   if(file == NULL)
-    return NULL;
+    return;
 
   ini_parse_state parse_state = KEY;
   bool inQuotes = false;
   char current;
   char last = '\0';
-  ini_parse_line_data line_data = {NULL, NULL, NULL, NULL};
+  ini_parse_line_data line_data = {"", "", ""};
 
   next_char:
   if((current = fgetc(file)) != EOF) {
-    if(last == '\\')
+    if(last == '\\' && parse_state != COMMENT)
       goto add_char;
     if(current == '\\') {
       last = current;
@@ -31,10 +33,8 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
     if(current == '\n') {
       if(_key_compare(line_data, section, key) && parse_state != KEY) {
         fclose(file);
-        char* value = malloc(strlen(line_data[VALUE]) + sizeof('\0'));
-        strcpy(value, line_data[VALUE]);
-        _free_line_data(line_data);
-        return value;
+        strncpy(buffer, line_data[VALUE], 256 * sizeof(char));
+        return;
       }
       _set_parse_state(&parse_state, line_data, KEY);
       goto next_char;
@@ -60,39 +60,27 @@ extern char* ini_get_char(const char* path, const char* section, const char* key
       case ']':
         goto next_char;
       case '#':
-        _set_parse_state(&parse_state, line_data, COMMENT);
+        parse_state = COMMENT;
         goto next_char;
       case ';':
-        _set_parse_state(&parse_state, line_data, COMMENT);
+        parse_state = COMMENT;
         goto next_char;
       default:
         break;
     }
 
-    char* new_data; // You can't declare a variable behind a lable in C11
     add_char:
-    new_data = _add_str_and_char(line_data[parse_state], current);
-    if(new_data == NULL) {
-      fclose(file);
-      _free_line_data(line_data);
-      return NULL;
-    }
-    if(line_data[parse_state] != NULL)
-      free(line_data[parse_state]);
-    line_data[parse_state] = new_data;
-
+    _add_str_and_char(line_data[parse_state], current);
     last = current;
     goto next_char;
   }
   fclose(file);
-  _free_line_data(line_data);
-  return NULL;
+  return;
 }
 
 static inline void _set_parse_state(ini_parse_state* parse_state, ini_parse_line_data line_data, const ini_parse_state new_parse_state) {
   *parse_state = new_parse_state;
-  free(line_data[new_parse_state]);
-  line_data[new_parse_state] = NULL;
+  *line_data[new_parse_state] = '\0';
 }
 
 static bool _key_compare(const ini_parse_line_data line_data, const char* section, const char* key) {
@@ -106,26 +94,12 @@ static bool _key_compare(const ini_parse_line_data line_data, const char* sectio
   return strcmp(section, line_data[SECTION]) == 0;
 }
 
-static char* _add_str_and_char(const char* base, const char addition) {
+static void _add_str_and_char(char* base, const char addition) {
   size_t base_length = base == NULL ? 0 : strlen(base);
-  char* result = (char*) malloc(base_length + sizeof(addition) + sizeof('\0'));
-  if(result == NULL)
-    return NULL;
 
-  if(base != NULL)
-    strcpy(result, base);
+  if(base_length + sizeof(addition) + sizeof('\0') >= 256)
+    return;
 
-  *(result + base_length) = addition;
-  *(result + base_length + sizeof(addition)) = '\0';
-
-  return result;
-}
-
-static void _free_line_data(ini_parse_line_data line_data) {
-  for(size_t i = 0; i < 4; i++) {
-    if(line_data[i] != NULL) {
-      free(line_data[i]);
-      line_data[i] = NULL;
-    }
-  }
+  *(base + base_length) = addition;
+  *(base + base_length + sizeof(addition)) = '\0';
 }
