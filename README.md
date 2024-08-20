@@ -4,7 +4,7 @@ This a library to parse .ini files for other projects. I want to use this for al
 # Disclaimer
 **This library is originally meant to be used for other SMaster4 projects.
 It is not a library meant to be used in combination with anything else since the stability and maintanance is tied to other SMaster4 Project needs.**
-No one dissallows you from using it, but there is no guarantue for stability.
+No one disallows you from using it, but there is no guarantue for stability.
 
 # Building
 ## Requirements
