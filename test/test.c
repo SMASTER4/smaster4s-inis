@@ -65,7 +65,7 @@ static bool _test_ini_get_char_prepare() {
     FILE* file = fopen("test.ini", "w");
     if(file == NULL)
       return true;
-    fprintf(file, "[notImportantSection]key=wrongValue\n[section]\nkey=\"value\"# Comment\n");
+    fprintf(file, "[notImportantSection]key=wrongValue\n[section]\nkey=value# Comment\n");
     fclose(file);
   }
   return false;
