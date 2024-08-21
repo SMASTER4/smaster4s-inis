@@ -11,6 +11,7 @@ extern void ini_get_char(char buffer[256], const char* path, const char* section
   if(buffer == NULL || path == NULL || key == NULL)
     return;
   buffer[0] = '\0';
+
   FILE* file = fopen(path, "r");
   if(file == NULL)
     return;
@@ -27,7 +28,6 @@ extern void ini_get_char(char buffer[256], const char* path, const char* section
       last = current;
     if(parse_context == FAILURE) {
       fclose(file);
-      buffer = NULL;
       return;
     }
     if(parse_context == FINISHED) {
@@ -38,7 +38,6 @@ extern void ini_get_char(char buffer[256], const char* path, const char* section
   }
 
   fclose(file);
-  buffer = NULL;
   return;
 }
 
