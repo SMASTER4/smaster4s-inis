@@ -106,7 +106,7 @@ static bool _key_compare(const ini_parse_line_data line_data, const char* sectio
 static void _add_str_and_char(char* base, const char addition) {
   size_t base_length = base == NULL ? 0 : strlen(base);
 
-  if(base_length + sizeof(addition) + sizeof('\0') >= 256)
+  if(base_length + sizeof(addition) + sizeof('\0') > 256)
     return;
 
   *(base + base_length) = addition;
