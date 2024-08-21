@@ -38,7 +38,6 @@ extern void ini_get_char(char buffer[256], const char* path, const char* section
   }
 
   fclose(file);
-  return;
 }
 
 static inline ini_parse_success _ini_get_char_parse_char(ini_parse_state* parse_state, ini_parse_line_data line_data, char current, char last, bool* inQuotes, const char* section, const char* key) {
