@@ -21,61 +21,76 @@ extern void ini_get_char(char buffer[256], const char* path, const char* section
   char last = '\0';
   ini_parse_line_data line_data = {"", "", ""};
 
-  next_char:
-  if((current = fgetc(file)) != EOF) {
-    if(last == '\\' && parse_state != COMMENT)
-      goto add_char;
-    if(current == '\\') {
+  while((current = fgetc(file)) != EOF) {
+    ini_parse_success parse_context = _ini_get_char_parse_char(&parse_state, line_data, current, last, &inQuotes, section, key);
+    if(parse_context == CONTINUE) {
       last = current;
-      goto next_char;
+      continue;
     }
+    if(parse_context == FAILURE) {
+      fclose(file);
+      buffer = NULL;
+      return;
+    }
+    if(parse_context == FINISHED) {
+      fclose(file);
+      strncpy(buffer, line_data[VALUE], 256 * sizeof(char));
+      return;
+    }
+    fclose(file);
+    buffer = NULL;
+    return;
+  }
+
+  fclose(file);
+  return;
+}
+
+static inline ini_parse_success _ini_get_char_parse_char(ini_parse_state* parse_state, ini_parse_line_data line_data, char current, char last, bool* inQuotes, const char* section, const char* key) {
+    if(last == '\\' && *parse_state != COMMENT)
+      goto add_char;
+    if(current == '\\')
+      return CONTINUE;
 
     if(current == '\n') {
-      if(_key_compare(line_data, section, key) && parse_state != KEY) {
-        fclose(file);
-        strncpy(buffer, line_data[VALUE], 256 * sizeof(char));
-        return;
-      }
-      _set_parse_state(&parse_state, line_data, KEY);
-      goto next_char;
+      if(_key_compare(line_data, section, key) && parse_state != KEY)
+        return FINISHED;
+      _set_parse_state(parse_state, line_data, KEY);
+      return CONTINUE;
     }
 
-    if(parse_state == COMMENT)
-      goto next_char;
+    if(*parse_state == COMMENT)
+      return CONTINUE;
 
     if(current == '"') {
-      inQuotes = !inQuotes;
-      goto next_char;
+      *inQuotes = !(*inQuotes);
+      return CONTINUE;
     }
-    if(inQuotes)
-      goto add_char;
+    if(*inQuotes)
+      return CONTINUE;
 
     switch(current) {
       case '=':
-        _set_parse_state(&parse_state, line_data, VALUE);
-        goto next_char;
+        _set_parse_state(parse_state, line_data, VALUE);
+        return CONTINUE;
       case '[':
-        _set_parse_state(&parse_state, line_data, SECTION);
-        goto next_char;
+        _set_parse_state(parse_state, line_data, SECTION);
+        return CONTINUE;
       case ']':
-        goto next_char;
+        return CONTINUE;
       case '#':
-        parse_state = COMMENT;
-        goto next_char;
+        *parse_state = COMMENT;
+        return CONTINUE;
       case ';':
-        parse_state = COMMENT;
-        goto next_char;
+        *parse_state = COMMENT;
+        return CONTINUE;
       default:
         break;
     }
 
     add_char:
-    _add_str_and_char(line_data[parse_state], current);
-    last = current;
-    goto next_char;
-  }
-  fclose(file);
-  return;
+    _add_str_and_char(line_data[*parse_state], current);
+    return CONTINUE;
 }
 
 static inline void _set_parse_state(ini_parse_state* parse_state, ini_parse_line_data line_data, const ini_parse_state new_parse_state) {
