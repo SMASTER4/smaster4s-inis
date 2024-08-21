@@ -23,10 +23,8 @@ extern void ini_get_char(char buffer[256], const char* path, const char* section
 
   while((current = fgetc(file)) != EOF) {
     ini_parse_success parse_context = _ini_get_char_parse_char(&parse_state, line_data, current, last, &inQuotes, section, key);
-    if(parse_context == CONTINUE) {
+    if(parse_context == CONTINUE)
       last = current;
-      continue;
-    }
     if(parse_context == FAILURE) {
       fclose(file);
       buffer = NULL;
@@ -37,12 +35,10 @@ extern void ini_get_char(char buffer[256], const char* path, const char* section
       strncpy(buffer, line_data[VALUE], 256 * sizeof(char));
       return;
     }
-    fclose(file);
-    buffer = NULL;
-    return;
   }
 
   fclose(file);
+  buffer = NULL;
   return;
 }
 
