@@ -10,7 +10,7 @@ typedef enum {CONTINUE /* Continue calling the function */, FINISHED /* The func
 // The return value is owned by the caller and needs to be freed by the caller
 // The return value will be NULL on failure
 // The return value will be NULL if the key is empty
-extern void ini_get_char(char buffer[256], const char* path, const char* section, const char* key);
+extern void ini_get_str(char buffer[256], const char* path, const char* section, const char* key);
 
 static inline ini_parse_success _ini_get_char_parse_char(ini_parse_state* parse_state, ini_parse_line_data line_data, char current, char last, bool* inQuotes, const char* section, const char* key);
 

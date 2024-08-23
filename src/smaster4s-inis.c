@@ -7,7 +7,7 @@
 
 #include "smaster4s-inis.h"
 
-extern void ini_get_char(char buffer[256], const char* path, const char* section, const char* key) {
+extern void ini_get_str(char buffer[256], const char* path, const char* section, const char* key) {
   if(buffer == NULL || path == NULL || key == NULL)
     return;
   buffer[0] = '\0';
