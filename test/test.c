@@ -45,12 +45,10 @@ static void _test_ini_get_char(int count) {
 
     int i = 0;
     char result[256];
-    loop:
+    for(int i = 0; i < count; i++) {
       ini_get_char(result, "test.ini", "section", "key");
       _assert_string("ini_get_char", result, "value");
-      i++;
-      if(i < count)
-        goto loop;
+    }
 
     double end = (double) clock() / CLOCKS_PER_SEC;
 
@@ -65,7 +63,7 @@ static bool _test_ini_get_char_prepare() {
     FILE* file = fopen("test.ini", "w");
     if(file == NULL)
       return true;
-    fprintf(file, "[notImportantSection]key=wrongValue\n[section]\nkey=value# Comment\n");
+    fprintf(file, "[notImportantSection]key=valueFromTheWrongSection\n[section]\nwrongKey=valueFromTheWrongKey# Comment\n# Comment\nkey=value\nevenMoreWrongKey=valueFromTheWrongKey");
     fclose(file);
   }
   return false;
