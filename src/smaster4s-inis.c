@@ -86,7 +86,11 @@ static inline ini_parse_success _ini_get_char_parse_char(ini_parse_state* parse_
 }
 
 static inline void _set_parse_state(ini_parse_state* parse_state, ini_parse_line_data line_data, const ini_parse_state new_parse_state) {
+  if(parse_state == NULL)
+    return;
   *parse_state = new_parse_state;
+  if(line_data == NULL)
+    return;
   *line_data[new_parse_state] = '\0';
 }
 
