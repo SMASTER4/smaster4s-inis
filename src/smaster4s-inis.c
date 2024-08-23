@@ -7,7 +7,7 @@
 
 #include "smaster4s-inis.h"
 
-extern void ini_get_str(char buffer[256], const char* path, const char* section, const char* key) {
+extern void ini_get_str(char buffer[INI_LINE_DATA_SIZE], const char* path, const char* section, const char* key) {
   if(buffer == NULL || path == NULL || key == NULL)
     return;
   buffer[0] = '\0';
@@ -31,7 +31,7 @@ extern void ini_get_str(char buffer[256], const char* path, const char* section,
       case FAILURE:
         break;
       case FINISHED:
-        strncpy(buffer, line_data[VALUE], 256 * sizeof(char));
+        strncpy(buffer, line_data[VALUE], INI_LINE_DATA_SIZE * sizeof(char));
         break;
     }
     break;
@@ -104,7 +104,7 @@ static bool _key_compare(const ini_parse_line_data line_data, const char* sectio
 static void _add_str_and_char(char* base, const char addition) {
   size_t base_length = base == NULL ? 0 : strlen(base);
 
-  if(base_length + sizeof(addition) + sizeof('\0') > 256)
+  if(base_length + sizeof(addition) + sizeof('\0') > INI_LINE_DATA_SIZE)
     return;
 
   *(base + base_length) = addition;
