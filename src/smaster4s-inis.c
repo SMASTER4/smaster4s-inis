@@ -27,13 +27,14 @@ extern void ini_get_char(char buffer[256], const char* path, const char* section
     switch(parse_context) {
       case CONTINUE:
         last = current;
-        break;
+        continue;
       case FAILURE:
         break;
       case FINISHED:
         strncpy(buffer, line_data[VALUE], 256 * sizeof(char));
         break;
     }
+    break;
   }
 
   fclose(file);
@@ -77,8 +78,6 @@ static inline ini_parse_success _ini_get_char_parse_char(ini_parse_state* parse_
       case ';':
         *parse_state = COMMENT;
         return CONTINUE;
-      default:
-        break;
     }
 
     add_char:
