@@ -20,6 +20,10 @@
 
 #include "test.h"
 
+static inline void _print_success(const char* name, const int count, const double start, const double end) {
+  printf("Finished running the assertion loop of %s %d time%s in %f on average in %f seconds!\n", name, count, count > 1 ? "s" : "", (end - start) / count, end - start);
+}
+
 static void _assert_string(const char* name, const char* a, const char* b) {
   if(name == NULL) {
     printf("Assertion failed because as name of the assertion NULL was passed\n");
@@ -35,41 +39,58 @@ static void _assert_string(const char* name, const char* a, const char* b) {
   }
 }
 
-static void _test_ini_get_char(int count) {
-    if(count <= 0)
-      return;
-    if(_test_ini_get_char_prepare())
-      printf("Preparing for the testing ini_get_char failed");
+static void _test_ini_get_str_from_str(int count) {
+  if(count <= 0)
+    return;
 
-    double start = (double) clock() / CLOCKS_PER_SEC;
+  double start = (double) clock() / CLOCKS_PER_SEC;
 
-    int i = 0;
-    char result[256];
-    for(int i = 0; i < count; i++) {
-      ini_get_str_from_str(result, "[section]\nkey=value\n", "section", "key");
-      _assert_string("ini_get_char", result, "value");
-    }
+  char result[256];
+  for(int i = 0; i < count; i++) {
+    ini_get_str_from_str(result, TEST_TEXT, "section", "key");
+    _assert_string("ini_get_str_from_str", result, "value");
+  }
 
-    double end = (double) clock() / CLOCKS_PER_SEC;
+  double end = (double) clock() / CLOCKS_PER_SEC;
 
-    _test_ini_get_char_clean_up();
-    printf("Finished running the assertion loop of ini_get_char %d times in %f on average in %f seconds!\n", count, (end - start) / count, end - start);
+  _print_success("ini_get_str_from_str", count, start, end);
 }
 
-static bool _test_ini_get_char_prepare() {
+static void _test_ini_get_str(int count) {
+  if(count <= 0)
+    return;
+  if(_test_ini_get_str_prepare())
+    printf("Preparing for the testing ini_get_char failed");
+
+  double start = (double) clock() / CLOCKS_PER_SEC;
+
+  char result[256];
+  for(int i = 0; i < count; i++) {
+    ini_get_str(result, "test.ini", "section", "key");
+    _assert_string("ini_get_str", result, "value");
+  }
+
+  double end = (double) clock() / CLOCKS_PER_SEC;
+
+  _test_ini_get_str_clean_up();
+
+  _print_success("ini_get_str", count, start, end);
+}
+
+static bool _test_ini_get_str_prepare() {
   if(access("test.ini", F_OK) == 0 && access("test.ini", R_OK) != 0)
     return true;
   if(access("test.ini", F_OK) != 0) {
     FILE* file = fopen("test.ini", "w");
     if(file == NULL)
       return true;
-    fprintf(file, "[notImportantSection]key=valueFromTheWrongSection\n[section]\nwrongKey=valueFromTheWrongKey# Comment\n# Comment\nkey=value\nevenMoreWrongKey=valueFromTheWrongKey");
+    fprintf(file, TEST_TEXT);
     fclose(file);
   }
   return false;
 }
 
-static void _test_ini_get_char_clean_up() {
+static void _test_ini_get_str_clean_up() {
   if(access("test.ini", W_OK) == 0)
     remove("test.ini");
 }
@@ -79,7 +100,8 @@ static void _run_tests(int count) {
     printf("The execution count has to be higher than 0 not %d", count);
     return;
   }
-  _test_ini_get_char(count);
+  _test_ini_get_str(count);
+  _test_ini_get_str_from_str(count);
 }
 
 int main(int argc, char** argv) {
