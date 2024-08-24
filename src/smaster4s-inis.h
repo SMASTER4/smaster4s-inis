@@ -8,12 +8,14 @@
 
 typedef enum {KEY, VALUE, SECTION, COMMENT} ini_parse_state;
 typedef char ini_parse_line_data[3][INI_LINE_DATA_SIZE];
-typedef enum {CONTINUE /* Continue calling the function */, FINISHED /* The function has finished. Don't call it again. */, FAILURE /* Something went wrong. Your input was wrong the file is corrupted, whatever. */} ini_parse_success;
+typedef enum {CONTINUE /* Continue calling the function */, FINISHED /* The function has finished. Don't call it again. */, FAILURE /* Something went wrong. Your input was wrong, the file is corrupted, whatever. */} ini_parse_success;
+
+// Parses text
+// The buffer wont be changed if the function fails
+extern void ini_get_str_from_str(char buffer[INI_LINE_DATA_SIZE], const char* text, const char* section, const char* key);
 
 // Parses the INI file path is pointing to
-// The return value is owned by the caller and needs to be freed by the caller
-// The return value will be NULL on failure
-// The return value will be NULL if the key is empty
+// The buffer wont be changed if the function fails
 extern void ini_get_str(char buffer[INI_LINE_DATA_SIZE], const char* path, const char* section, const char* key);
 
 static inline ini_parse_success _ini_get_char_parse_char(ini_parse_state* parse_state, ini_parse_line_data line_data, char current, char last, bool* inQuotes, const char* section, const char* key);

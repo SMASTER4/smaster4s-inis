@@ -7,10 +7,31 @@
 
 #include "smaster4s-inis.h"
 
+extern void ini_get_str_from_str(char buffer[INI_LINE_DATA_SIZE], const char* text, const char* section, const char* key) {
+  if(buffer == NULL || text == NULL || key == NULL)
+    return;
+
+  ini_parse_state parse_state = KEY;
+  bool inQuotes = false;
+  ini_parse_line_data line_data = {"", "", ""};
+
+  for(size_t current = 0; current < strlen(text); current++) {
+    ini_parse_success parse_context = _ini_get_char_parse_char(&parse_state, line_data, *(text + current), current > 0 ? *(text + current - 1) : '\0', &inQuotes, section, key);
+    switch(parse_context) {
+      case CONTINUE:
+        continue;
+      case FAILURE:
+        return;
+      case FINISHED:
+        strncpy(buffer, line_data[VALUE], INI_LINE_DATA_SIZE);
+        return;
+    }
+  }
+}
+
 extern void ini_get_str(char buffer[INI_LINE_DATA_SIZE], const char* path, const char* section, const char* key) {
   if(buffer == NULL || path == NULL || key == NULL)
     return;
-  buffer[0] = '\0';
 
   FILE* file = fopen(path, "r");
   if(file == NULL)
@@ -31,7 +52,7 @@ extern void ini_get_str(char buffer[INI_LINE_DATA_SIZE], const char* path, const
       case FAILURE:
         break;
       case FINISHED:
-        strncpy(buffer, line_data[VALUE], INI_LINE_DATA_SIZE * sizeof(char));
+        strncpy(buffer, line_data[VALUE], INI_LINE_DATA_SIZE);
         break;
     }
     break;

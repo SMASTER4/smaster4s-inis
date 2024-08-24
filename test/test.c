@@ -46,7 +46,7 @@ static void _test_ini_get_char(int count) {
     int i = 0;
     char result[256];
     for(int i = 0; i < count; i++) {
-      ini_get_str(result, "test.ini", "section", "key");
+      ini_get_str_from_str(result, "[section]\nkey=value\n", "section", "key");
       _assert_string("ini_get_char", result, "value");
     }
 
