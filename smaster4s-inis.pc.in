@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: smaster4s-inis
+Description: A library to parse .ini files with. Nothing unexpected.
+Version: @SMASTER4-INIS_VERSION@
+Libs: -L${libdir} -lsmaster4s-inis
+Cflags: -I${includedir}
