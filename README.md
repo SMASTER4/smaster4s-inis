@@ -73,3 +73,7 @@ cmake .. # The directory where the so called CMakeLists.txt is inside
 ```bash
 make
 ```
+8. You now might want to install the library on your device for that run(optional):
+```bash
+sudo make install # Be carefull with this. You will need to undo this manually
+```
