@@ -40,7 +40,7 @@ extern void ini_get_str_from_str(char buffer[INI_LINE_DATA_SIZE], const char* te
   ini_parse_line_data line_data = {"", "", ""};
 
   for(size_t current = 0; current < strlen(text); current++) {
-    ini_parse_success parse_context = _ini_get_char_parse_char(&parse_state, line_data, *(text + current), current > 0 ? *(text + current - 1) : '\0', &inQuotes, section, key);
+    ini_parse_success parse_context = _ini_get_str_parse_char(&parse_state, line_data, *(text + current), current > 0 ? *(text + current - 1) : '\0', &inQuotes, section, key);
     switch(parse_context) {
       case CONTINUE:
         continue;
@@ -90,7 +90,7 @@ extern void ini_get_str(char buffer[INI_LINE_DATA_SIZE], const char* path, const
   ini_parse_line_data line_data = {"", "", ""};
 
   while((current = fgetc(file)) != EOF) {
-    ini_parse_success parse_context = _ini_get_char_parse_char(&parse_state, line_data, current, last, &inQuotes, section, key);
+    ini_parse_success parse_context = _ini_get_str_parse_char(&parse_state, line_data, current, last, &inQuotes, section, key);
     switch(parse_context) {
       case CONTINUE:
         last = current;
@@ -107,7 +107,7 @@ extern void ini_get_str(char buffer[INI_LINE_DATA_SIZE], const char* path, const
   fclose(file);
 }
 
-static inline ini_parse_success _ini_get_char_parse_char(ini_parse_state* parse_state, ini_parse_line_data line_data, char current, char last, bool* inQuotes, const char* section, const char* key) {
+static ini_parse_success _ini_get_str_parse_char(ini_parse_state* parse_state, ini_parse_line_data line_data, char current, char last, bool* inQuotes, const char* section, const char* key) {
     if(last == '\\' && *parse_state != COMMENT)
       goto add_char;
     if(current == '\\')

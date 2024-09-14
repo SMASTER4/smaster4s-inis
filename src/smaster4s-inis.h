@@ -31,7 +31,9 @@ extern uint64_t ini_get_uint64_t(const char* path, const char* section, const ch
 // The buffer wont be changed if the function fails
 extern void ini_get_str(char buffer[INI_LINE_DATA_SIZE], const char* path, const char* section, const char* key);
 
-static inline ini_parse_success _ini_get_char_parse_char(ini_parse_state* parse_state, ini_parse_line_data line_data, char current, char last, bool* inQuotes, const char* section, const char* key);
+
+
+static ini_parse_success _ini_get_str_parse_char(ini_parse_state* parse_state, ini_parse_line_data line_data, char current, char last, bool* inQuotes, const char* section, const char* key);
 
 static inline void _set_parse_state(ini_parse_state* parse_state, ini_parse_line_data line_data, const ini_parse_state new_parse_state);
 
