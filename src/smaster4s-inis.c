@@ -7,6 +7,30 @@
 
 #include "smaster4s-inis.h"
 
+extern int32_t ini_get_int32_t_from_str(const char* text, const char* section, const char* key) {
+  char buffer[INI_LINE_DATA_SIZE];
+  *buffer = '\0';
+  ini_get_str_from_str(buffer, text, section, key);
+  return atoi(buffer);
+}
+
+
+extern int64_t ini_get_int64_t_from_str(const char* text, const char* section, const char* key) {
+  char buffer[INI_LINE_DATA_SIZE];
+  *buffer = '\0';
+  ini_get_str_from_str(buffer, text, section, key);
+  return strtoll(buffer, NULL, 10);
+}
+
+
+extern uint64_t ini_get_uint64_t_from_str(const char* text, const char* section, const char* key) {
+  char buffer[INI_LINE_DATA_SIZE];
+  *buffer = '\0';
+  ini_get_str_from_str(buffer, text, section, key);
+  return strtoull(buffer, NULL, 10);
+}
+
+
 extern void ini_get_str_from_str(char buffer[INI_LINE_DATA_SIZE], const char* text, const char* section, const char* key) {
   if(buffer == NULL || text == NULL || key == NULL)
     return;
@@ -28,6 +52,28 @@ extern void ini_get_str_from_str(char buffer[INI_LINE_DATA_SIZE], const char* te
     }
   }
 }
+
+extern int32_t ini_get_int32_t(const char* path, const char* section, const char* key) {
+  char buffer[INI_LINE_DATA_SIZE];
+  *buffer = '\0';
+  ini_get_str(buffer, path, section, key);
+  return atoi(buffer);
+}
+
+extern int64_t ini_get_int64_t(const char* path, const char* section, const char* key) {
+  char buffer[INI_LINE_DATA_SIZE];
+  *buffer = '\0';
+  ini_get_str(buffer, path, section, key);
+  return strtoll(buffer, NULL, 10);
+}
+
+extern uint64_t ini_get_uint64_t(const char* path, const char* section, const char* key) {
+  char buffer[INI_LINE_DATA_SIZE];
+  *buffer = '\0';
+  ini_get_str(buffer, path, section, key);
+  return strtoull(buffer, NULL, 10);
+}
+
 
 extern void ini_get_str(char buffer[INI_LINE_DATA_SIZE], const char* path, const char* section, const char* key) {
   if(buffer == NULL || path == NULL || key == NULL)
