@@ -121,7 +121,7 @@ static bool _key_compare(const ini_parse_line_data line_data, const char* sectio
   if(strcmp(key, line_data[KEY]) != 0)
     return false;
   if(section == NULL)
-    return line_data[SECTION] == NULL;
+    return line_data[SECTION] == NULL || *line_data[SECTION] == '\0';
 
   return strcmp(section, line_data[SECTION]) == 0;
 }
